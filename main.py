@@ -4,8 +4,8 @@ import configparser
 config = configparser.RawConfigParser()
 config.read("config/config.properties")
 
-source_auth = dict(config.items("TARTU_AUTH"))
-target_auth = dict(config.items("AUTH"))
+source_auth = dict(config.items("SOURCE_AUTH"))
+target_auth = dict(config.items("TARGET_AUTH"))
 
 args = {
     "source_auth": {
