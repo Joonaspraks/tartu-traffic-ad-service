@@ -8,8 +8,9 @@ pink = "#de43a0"
 yellow = "#dece43"
 green = "green"
 
+
 def plot_result(ts_df, sensor, args):
-    plot_dir = args["plot_directory"] or "plots"
+    plot_dir = args["plot"]["directory"] or "plots"
     if not os.path.isdir(plot_dir):
         os.makedirs(plot_dir, exist_ok=True)
 
@@ -62,6 +63,6 @@ def plot_result(ts_df, sensor, args):
 
     plot(
         fig,
-        filename=f"{plot_dir}/{sensor['name']}",
+        filename=f"{plot_dir}/{sensor['name']}.html",
         auto_open=False,
     )
