@@ -26,11 +26,6 @@ args = {
         "end_date": "2023-06-01",
         "directory": "data/files",
         "data_type": "EVENT",
-        # "data_type": "MEASUREMENT",
-        # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
-        # only frequencies divisible by hour allowed: 1H, 30T, 20T, 15T, 12T etc
-        # relevant for "data_type": "MEASUREMENT"
-        # "measurement_frequency": "1H",
         "devices": [
             {"source": "123v1", "target": "123v2"},
             {"source": "456v1", "target": "456v2"},
