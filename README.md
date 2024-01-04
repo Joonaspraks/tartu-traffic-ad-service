@@ -39,3 +39,16 @@ Modify the args dictionary for configuration options
   - `upload_imputation` - whether imputation results should be uploaded
   - `batch_upload_size` - number of batches the results will be divided to before upload (performance configuration)
   - `c8y_measurement_type` - Cumulocity measurement type
+
+## Input Data
+Input data folder must be provided in the directory specified by `data_loading.directory`. Each data folder must be named after the Cumulocity source device’s id. 
+
+An example input data file tree:
+- `my_data`
+  - `id_of_device_1`
+    - `file1.csv`
+    - `file2.csv`
+  - `id_of_device_2`
+    - `file1.csv`
+
+For files containing event data a single column named `time` is expected. For measurement data columns `time` and `value` must be included.
