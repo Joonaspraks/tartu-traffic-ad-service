@@ -6,6 +6,7 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 from .preparer import (
     is_last_sunday_of_october,
     is_last_sunday_of_march,
+    separate_workdays_and_weekends,
 )
 
 
@@ -105,7 +106,7 @@ def impute_big_gaps(ts_df):
     df_by_time_and_weekday = temp_df.groupby(
         [temp_df.index.time, temp_df.index.weekday]
     )
-    imputed_df = pd.DataFrame()
+    imputed_df_by_week = pd.DataFrame()
     for _, group in df_by_time_and_weekday:
         if group["imputed_data"].count() == 0:
             weekday = calendar.day_name[group.index[0].date().weekday()]
@@ -115,7 +116,44 @@ def impute_big_gaps(ts_df):
         group["imputed_data"] = group["imputed_data"].interpolate(
             limit_direction="both"
         )
-        imputed_df = imputed_df.append(group)
+        imputed_df_by_week = imputed_df_by_week.append(group)
+        
+    imputed_df_by_week = imputed_df_by_week.sort_index()
+
+    (
+        workdays_df,
+        _tumbled_workdays_df,
+        weekends_df,
+        _tumbled_weekends_df,
+    ) = separate_workdays_and_weekends(temp_df[["imputed_data"]])
+
+    df_by_time = workdays_df.groupby(
+        [workdays_df.index.time]
+    )
+    imputed_df_by_workday = pd.DataFrame()
+    for _, group in df_by_time:
+        group["imputed_data"] = group["imputed_data"].interpolate(
+            limit_direction="both"
+        )
+        imputed_df_by_workday = imputed_df_by_workday.append(group)
+
+    df_by_time = weekends_df.groupby(
+        [weekends_df.index.time]
+    )
+    imputed_df_by_weekend = pd.DataFrame()
+    for _, group in df_by_time:
+        group["imputed_data"] = group["imputed_data"].interpolate(
+            limit_direction="both"
+        )
+        imputed_df_by_weekend = imputed_df_by_weekend.append(group)
+
+    imputed_df_by_day = imputed_df_by_workday.append(
+        imputed_df_by_weekend
+    ).sort_index()
+
+    # take a (weighted) average of daily and weekly imputation
+
+    imputed_df = (0.6*imputed_df_by_week + 0.4*imputed_df_by_day)
 
     # add anomalous days back to the data
     imputed_df["imputed_data"][is_anomalous] = ts_df["imputed_data"][is_anomalous]
